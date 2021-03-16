@@ -13,12 +13,19 @@ pnDefaults.delay = 3000;
 const refs = {
     searchForm: document.querySelector('#search-form'),
     galleryList: document.querySelector('#gallery-list'),
-    galleryLoad: document.querySelector('#gallery-load'),
+    // galleryLoad: document.querySelector('#gallery-load'),
+    observerTarget: document.querySelector('#observer-target'),
 };
 
 refs.searchForm.addEventListener('submit', onSearch);
-refs.galleryLoad.addEventListener('click', onGalleryLoadClick);
+// refs.galleryLoad.addEventListener('click', onGalleryLoadClick);
 refs.galleryList.addEventListener('click', onGalleryListClick);
+
+const observer = new IntersectionObserver(onTargetIntersect, {
+    rootMargin: '50px',
+    threshold: 0.01,
+});
+observer.observe(refs.observerTarget);
 
 async function onSearch(e) {
     e.preventDefault();
@@ -39,9 +46,24 @@ async function onSearch(e) {
     }
 }
 
-async function onGalleryLoadClick() {
-    if (API.isLastPage) {
-        notifyUser('last-page');
+// async function onGalleryLoadClick() {
+//     if (API.isLastPage) {
+//         notifyUser('last-page');
+//         return;
+//     }
+
+//     try {
+//         const hits = await API.getNextPageHits();
+
+//         addGalleryListMarkup(hits);
+//         scrollToLastAdded(hits.length);
+//     } catch (err) {
+//         apiErrorHandler(err);
+//     }
+// }
+
+async function onTargetIntersect(targets) {
+    if (!targets[0].isIntersecting || API.isLastPage) {
         return;
     }
 
@@ -49,7 +71,6 @@ async function onGalleryLoadClick() {
         const hits = await API.getNextPageHits();
 
         addGalleryListMarkup(hits);
-        scrollToLastAdded(hits.length);
     } catch (err) {
         apiErrorHandler(err);
     }
@@ -69,22 +90,22 @@ function apiErrorHandler(err) {
     clearGalleryList();
 }
 
-function scrollToLastAdded(addedCount) {
-    if (addedCount < 1) {
-        return;
-    }
+// function scrollToLastAdded(addedCount) {
+//     if (addedCount < 1) {
+//         return;
+//     }
 
-    const collection = refs.galleryList.children;
-    const itemToScrollRef = collection[collection.length - addedCount];
+//     const collection = refs.galleryList.children;
+//     const itemToScrollRef = collection[collection.length - addedCount];
 
-    const itemTopAbs =
-        itemToScrollRef.getBoundingClientRect().top + pageYOffset;
+//     const itemTopAbs =
+//         itemToScrollRef.getBoundingClientRect().top + pageYOffset;
 
-    setTimeout(
-        () => window.scrollTo({ top: itemTopAbs, behavior: 'smooth' }),
-        800,
-    );
-}
+//     setTimeout(
+//         () => window.scrollTo({ top: itemTopAbs, behavior: 'smooth' }),
+//         800,
+//     );
+// }
 
 function notifyUser(type) {
     let message = '';

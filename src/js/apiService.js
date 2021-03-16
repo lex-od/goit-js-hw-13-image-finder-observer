@@ -1,6 +1,7 @@
 export default {
     BASE_URL: 'https://pixabay.com/api',
-    PAGE_SIZE: 12,
+    // PAGE_SIZE: 12,
+    PAGE_SIZE: 16,
     API_KEY: '20679339-fea13a2297aa7649e9595d106',
 
     currentPage: 1,
